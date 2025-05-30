@@ -1,23 +1,37 @@
 #!/bin/bash
 
 CONFIG_FILE="/home/container/DNL/Saved/Config/WindowsServer/GameUserSettings.ini"
+DEFAULT_FILE="/home/container/DNL/Config/DefaultGameUserSettings.ini"
 
-# Stelle sicher, dass MOD_LIST übergeben wurde
+# Prüfe ob MOD_LIST gesetzt ist
 if [ -z "$MOD_LIST" ]; then
-    echo "WARNUNG: MOD_LIST ist leer oder nicht gesetzt."
-    exit 0
+    echo "❌ MOD_LIST ist leer – breche ab."
+    exit 1
 fi
 
-# Falls [ServerSettings] existiert
+# 📁 Wenn Datei nicht existiert → kopieren aus Default
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "📄 $CONFIG_FILE nicht gefunden – kopiere DefaultGameUserSettings.ini ..."
+    
+    mkdir -p "$(dirname "$CONFIG_FILE")"
+    cp "$DEFAULT_FILE" "$CONFIG_FILE"
+
+    if [ $? -ne 0 ]; then
+        echo "❌ Fehler beim Kopieren von DefaultGameUserSettings.ini"
+        exit 1
+    fi
+fi
+
+# 🔧 ActiveMods setzen oder ergänzen
 if grep -q "^\[ServerSettings\]" "$CONFIG_FILE"; then
-    # Falls ActiveMods bereits vorhanden ist → ersetzen
     if grep -q "^ActiveMods=" "$CONFIG_FILE"; then
         sed -i "s/^ActiveMods=.*/ActiveMods=${MOD_LIST}/" "$CONFIG_FILE"
+        echo "🔁 ActiveMods ersetzt: ${MOD_LIST}"
     else
-        # ActiveMods nach [ServerSettings] einfügen
         sed -i "/^\[ServerSettings\]/a ActiveMods=${MOD_LIST}" "$CONFIG_FILE"
+        echo "➕ ActiveMods eingefügt: ${MOD_LIST}"
     fi
 else
-    # Block fehlt? Dann anhängen
     echo -e "\n[ServerSettings]\nActiveMods=${MOD_LIST}" >> "$CONFIG_FILE"
+    echo "📎 Block + ActiveMods angehängt."
 fi
