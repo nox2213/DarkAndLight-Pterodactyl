@@ -3,7 +3,7 @@
 CONFIG_DIR="/home/container/DNL/Saved/Config/WindowsServer"
 GAMEUSER_FILE="$CONFIG_DIR/GameUserSettings.ini"
 CHEATER_FILE="/home/container/DNL/Saved/AllowedCheaterSteamIDs.txt"
-FORCE_UPDATE="${FORCE_UPDATE:-false}"
+
 
 echo "🎮 Starting Pre-Startup Process ..."
 
