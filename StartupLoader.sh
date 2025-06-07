@@ -5,7 +5,6 @@ STEAMCMD_PATH="/home/container/steamcmd/steamcmd.sh"
 WORKSHOP_DIR="/home/container/.steam/steam/steamapps/workshop/content/529180"
 CONFIG_DIR="/home/container/DNL/Saved/Config/WindowsServer"
 GAMEUSER_FILE="$CONFIG_DIR/GameUserSettings.ini"
-GAME_FILE="$CONFIG_DIR/Game.ini"
 CHEATER_FILE="/home/container/DNL/Saved/AllowedCheaterSteamIDs.txt"
 FORCE_UPDATE="${FORCE_UPDATE:-false}"
 
@@ -47,11 +46,11 @@ mkdir -p "$CONFIG_DIR"
 if [ ! -f "$GAMEUSER_FILE" ]; then
     echo "📄 Creating new GameUserSettings.ini ..."
     cat > "$GAMEUSER_FILE" <<EOF
+
 [SessionSettings]
 SessionName="${SESSION_NAME}"
 Port=${SERVER_PORT}
 QueryPort=${QUERY_PORT}
-MultiHome=${MULTI_HOME_ADRESS}
 
 [ServerSettings]
 ServerPassword=${DNL_PASSWORD}
@@ -146,9 +145,6 @@ PreventDownloadDinos=False
 AllowFlyingStaminaRecovery=True
 AllowMultipleAttachedC4=True
 
-[MultiHome]
-MultiHome=${MULTI_HOME}
-
 [/Script/Engine.GameSession]
 MaxPlayers=${MAX_PLAYERS}
 
@@ -240,71 +236,12 @@ Version=5
 EOF
 else
     echo "✏️  Updating GameUserSettings.ini with environment values ..."
-    sed -i "/^\[SessionSettings\]/,/^\[/{s/^SessionName=.*/SessionName=${SESSION_NAME}/;s/^Port=.*/Port=${SERVER_PORT}/;s/^QueryPort=.*/QueryPort=${QUERY_PORT}/;s/^MultiHome=.*/MultiHome=${MULTI_HOME_ADRESS}/}" "$GAMEUSER_FILE"
+    sed -i "/^\[SessionSettings\]/,/^\[/{s/^SessionName=.*/SessionName=${SESSION_NAME}/;s/^Port=.*/Port=${SERVER_PORT}/;s/^QueryPort=.*/QueryPort=${QUERY_PORT}/}" "$GAMEUSER_FILE"
     sed -i "/^\[ServerSettings\]/,/^\[/{s/^ServerPassword=.*/ServerPassword=${DNL_PASSWORD}/;s/^ServerAdminPassword=.*/ServerAdminPassword=${DNL_ADMIN_PASSWORD}/;s/^RCONEnabled=.*/RCONEnabled=${RCON_ENABLED}/;s/^RCONPort=.*/RCONPort=${RCON_PORT}/;s/^ActiveMods=.*/ActiveMods=${MOD_LIST}/}" "$GAMEUSER_FILE"
-    sed -i "/^\[MultiHome\]/,/^\[/{s/^MultiHome=.*/MultiHome=${MULTI_HOME}/}" "$GAMEUSER_FILE"
     sed -i "/^\[\/Script\/Engine.GameSession\]/,/^\[/{s/^MaxPlayers=.*/MaxPlayers=${MAX_PLAYERS}/}" "$GAMEUSER_FILE"
     sed -i "/^\[MessageOfTheDay\]/,/^\[/{s/^Message=.*/Message=\"${MESSAGE_OF_THE_DAY}\"/}" "$GAMEUSER_FILE"
 fi
 
-# Create Game.ini if it doesn't exist
-if [ ! -f "$GAME_FILE" ]; then
-    echo "📄 Creating new Game.ini ..."
-    cat > "$GAME_FILE" <<EOF
-[/script/dnl.shootergamemode]
-MaxTribeLogs=100
-bDisableFriendlyFire=False
-bPvEDisableFriendlyFire=False
-bDisableLootCrates=False
-MaxNumberOfPlayersInTribe=0
-bIncreasePvPRespawnInterval=False
-bAutoPvETimer=False
-bPvEAllowTribeWar=True
-bPvEAllowTribeWarCancel=False
-bAllowCustomRecipes=True
-CustomRecipeEffectivenessMultiplier=1.000000
-CustomRecipeSkillMultiplier=1.000000
-bUseCorpseLocator=True
-bAllowUnlimitedRespecs=true
-bAllowPlatformSaddleMultiFloors=True
-SupplyCrateLootQualityMultiplier=1.000000
-FishingLootQualityMultiplier=1.000000
-OverrideMaxExperiencePointsPlayer=1
-PlayerHarvestingDamageMultiplier=1.000000
-CraftingSkillBonusMultiplier=1.000000
-OverrideMaxExperiencePointsDino=1
-DinoHarvestingDamageMultiplier=3.000000
-DinoTurretDamageMultiplier=1.000000
-MatingIntervalMultiplier=1.000000
-EggHatchSpeedMultiplier=1.000000
-BabyMatureSpeedMultiplier=1.000000
-BabyFoodConsumptionSpeedMultiplier=1.000000
-BabyImprintingStatScaleMultiplier=1.000000
-BabyCuddleIntervalMultiplier=1.000000
-BabyCuddleGracePeriodMultiplier=1.000000
-BabyCuddleLoseImprintQualitySpeedMultiplier=1.000000
-ResourceNoReplenishRadiusPlayers=1.000000
-ResourceNoReplenishRadiusStructures=1.000000
-GlobalSpoilingTimeMultiplier=1.000000
-GlobalItemDecompositionTimeMultiplier=1.000000
-GlobalCorpseDecompositionTimeMultiplier=1.000000
-CropDecaySpeedMultiplier=1.000000
-CropGrowthSpeedMultiplier=1.000000
-LayEggIntervalMultiplier=1.000000
-PoopIntervalMultiplier=1.000000
-HairGrowthSpeedMultiplier=1.000000
-CraftXPMultiplier=1.000000
-GenericXPMultiplier=1.000000
-HarvestXPMultiplier=1.000000
-KillXPMultiplier=1.000000
-SpecialXPMultiplier=1.000000
-StructureDamageRepairCooldown=180
-PvPZoneStructureDamageMultiplier=6.000000
-bFlyerPlatformAllowUnalignedDinoBasing=True
-bPassiveDefensesDamageRiderlessDinos=False
-bDisableStructurePlacementCollision=True
-EOF
-fi
 
 # Remove old file if it exists
 rm -f "$CHEATER_FILE"
